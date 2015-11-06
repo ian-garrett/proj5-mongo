@@ -1,3 +1,4 @@
+#Script for clearing out all memos from a DB
 from pymongo import MongoClient
 
 import CONFIG

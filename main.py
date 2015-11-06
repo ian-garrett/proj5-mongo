@@ -159,25 +159,26 @@ def put_memo(dt, mem):
 @app.route("/_createMemo")
 def createMemo():
   """
-  Call put_memo with user input, jumps back to index.html
+  Call put_memo with user input
   """
-  date = request.args.get('date', 0, type=str)
-  memo = request.args.get('memo', 0, type=str)
-  print("BREAK")
-  put_memo(date,memo)
-  return jsonify(result="hello")
+  date = request.args.get('date', 0, type=str) # pull date
+  memo = request.args.get('memo', 0, type=str) # pull memo text
+  put_memo(date,memo) # insert date and text into a memo via put_memo function
+  return jsonify(result="add success") # must return something, so why not success?
   
 
 
 @app.route('/_delete')
 def python_method_for_delete():
+  """
+  Deletes entry by ID
+  """
   print("before")
-  memoID = request.args.get('objectID', 0, type=str)
-  # blah blah deletion stuffs
+  memoID = request.args.get('objectID', 0, type=str) # pull unique identifier for each entry
   print(memoID)
-  collection.remove({'_id': ObjectId(memoID)})
+  collection.remove({'_id': ObjectId(memoID)}) # remove entry by ID
   print("after after")
-  return jsonify(result = "blah")
+  return jsonify(result="delete success") # must return something, so why not success?
 
 
 
@@ -195,12 +196,3 @@ if __name__ == "__main__":
     else:
         # Reachable from anywhere 
         app.run(port=CONFIG.PORT,host="0.0.0.0")
-
-
-#def deleteMemo():
- # """
-  #Deletes a memo from the server
-  #"""
-  #collection.remove(id)
-  #return
-

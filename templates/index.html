@@ -29,11 +29,11 @@
 <div class="row">
     <div class="col-md-2">
     <input type="text" class="form-control"
-     name="Date" value="Date" id='date'/>
+     name="Date" id='date' placeholder="DD/MM/YYYY"/>
   </div>
   <div class="col-md-8">
     <input type="text" class="form-control"
-      name="Memo" value="Memo" id='memo'/>
+      name="Memo" id='memo' placeholder="Type memo in this box"/>
   </div>
   <div class="col-md-2">
     <button id="create">Create Memo</button>
@@ -101,7 +101,10 @@
      });   // end of what we do on document ready
 
         function deleteMemo(memoID){
-            //var objectID = $(this).val();
+          /*
+          Function to obtain ID from row user wants to delete, sends to flask for deletion
+          */
+
             var objectID = memoID;
             console.log(objectID);
             $.getJSON($SCRIPT_ROOT + '/_delete',
