@@ -173,11 +173,8 @@ def python_method_for_delete():
   """
   Deletes entry by ID
   """
-  print("before")
   memoID = request.args.get('objectID', 0, type=str) # pull unique identifier for each entry
-  print(memoID)
   collection.remove({'_id': ObjectId(memoID)}) # remove entry by ID
-  print("after after")
   return jsonify(result="delete success") # must return something, so why not success?
 
 
