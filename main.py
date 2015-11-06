@@ -18,6 +18,7 @@ import flask
 from flask import render_template
 from flask import request
 from flask import url_for
+from flask import jsonify
 
 import json
 import logging
@@ -29,6 +30,7 @@ from dateutil import tz  # For interpreting local times
 
 # Mongo database
 from pymongo import MongoClient
+from bson.objectid import ObjectId
 
 
 ###
@@ -44,7 +46,7 @@ try:
     collection = db.dated
 
 except:
-    print("Failure opening database.  Is Mongo running? Correct password?")
+    print("Failure opening database. Is Mongo running? Correct password?")
     sys.exit(1)
 
 import uuid
@@ -84,10 +86,10 @@ def page_not_found(error):
 #
 #################
 
-# NOT TESTED with this application; may need revision 
+# NOT TESTED with this application; may need revision
 #@app.template_filter( 'fmtdate' )
 # def format_arrow_date( date ):
-#     try: 
+#     try:
 #         normal = arrow.get( date )
 #         return normal.to('local').format("ddd MM/DD/YYYY")
 #     except:
@@ -99,7 +101,7 @@ def humanize_arrow_date( date ):
     Date is internal UTC ISO format string.
     Output should be "today", "yesterday", "in 5 days", etc.
     Arrow will try to humanize down to the minute, so we
-    need to catch 'today' as a special case. 
+    need to catch 'today' as a special case.
     """
     try:
         then = arrow.get(date).to('local')
@@ -126,27 +128,57 @@ def get_memos():
     can be inserted directly in the 'session' object.
     """
     records = [ ]
-    for record in collection.find( { "type": "dated_memo" } ):
+    for record in collection.find( { "type": "dated_memo" } ).sort("date", 1):
         record['date'] = arrow.get(record['date']).isoformat()
-        del record['_id']
+        try:
+          record['_id'] = str(record['_id'])
+        except:
+          del record['_id']
         records.append(record)
-    return records 
+    return records
 
 
-# def put_memo(dt, mem):
-#     """
-#     Place memo into database
-#     Args:
-#        dt: Datetime (arrow) object
-#        mem: Text of memo
-#     NOT TESTED YET
-#     """
-#     record = { "type": "dated_memo", 
-#                "date": dt.to('utc').naive,
-#                "text": mem
-#             }
-#     collection.insert(record)
-#     return 
+def put_memo(dt, mem):
+    """
+    Place memo into database
+    Args:
+       dt: Datetime (arrow) object
+       mem: Text of memo
+    NOT TESTED YET
+    """
+    #print(dt)
+    date = arrow.get(dt, 'DD/MM/YYYY').to('utc').naive
+    record = { "type": "dated_memo", 
+               "date": date,
+               "text": mem,
+            }
+    collection.insert(record)
+    return
+
+
+@app.route("/_createMemo")
+def createMemo():
+  """
+  Call put_memo with user input, jumps back to index.html
+  """
+  date = request.args.get('date', 0, type=str)
+  memo = request.args.get('memo', 0, type=str)
+  print("BREAK")
+  put_memo(date,memo)
+  return jsonify(result="hello")
+  
+
+
+@app.route('/_delete')
+def python_method_for_delete():
+  print("before")
+  memoID = request.args.get('objectID', 0, type=str)
+  # blah blah deletion stuffs
+  print(memoID)
+  collection.remove({'_id': ObjectId(memoID)})
+  print("after after")
+  return jsonify(result = "blah")
+
 
 
 if __name__ == "__main__":
@@ -164,4 +196,11 @@ if __name__ == "__main__":
         # Reachable from anywhere 
         app.run(port=CONFIG.PORT,host="0.0.0.0")
 
-    
+
+#def deleteMemo():
+ # """
+  #Deletes a memo from the server
+  #"""
+  #collection.remove(id)
+  #return
+

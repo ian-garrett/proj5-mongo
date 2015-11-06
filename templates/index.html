@@ -20,10 +20,25 @@
    <!-- Our own style sheet -->
    <link rel="stylesheet" href="/static/css/memos.css" />
 
-
 </head>
 <body>
+
 <div class="container">
+
+  <h1>Create a Memo</h1>
+<div class="row">
+    <div class="col-md-2">
+    <input type="text" class="form-control"
+     name="Date" value="Date" id='date'/>
+  </div>
+  <div class="col-md-8">
+    <input type="text" class="form-control"
+      name="Memo" value="Memo" id='memo'/>
+  </div>
+  <div class="col-md-2">
+    <button id="create">Create Memo</button>
+  </div>
+ </div>
 
 <!-- Flashed messages before content -->
 {% with messages = get_flashed_messages() %}
@@ -42,21 +57,63 @@
     {% for memo in session.memos %}
   <div class="memo">
   <div class="row">
+  <div class="subrow" style="border: thin solid black">
   <div class="col-md-2">
     {{ memo.date | humanize }}
   </div>
-  <div class="col-md-10">
+  <div class="col-md-8">
     {{ memo.text }}
+  </div>
+  </div>
+  <div class="col-md-2">
+    <button id="delete" onclick="deleteMemo('{{memo._id}}')">Delete Memo</button>
   </div>
   </div> <!-- row -->
   </div> <!-- memo -->
+  <br>
   {% endfor %}
 {% else %}
   <p>No memos for you. </p>  
 {% endif %}
 
- 
-
 </div> <!-- container -->
+
+<!-- JS to insert into Python for DB processing  -->
+<script type="text/javascript">
+  $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+
+      //pass open times
+      $('#create').click(
+          // ... execute this function
+          function(){
+              var date = $('#date').val();
+              var memo = $('#memo').val();
+
+              //AJAX call
+              $.getJSON($SCRIPT_ROOT + '/_createMemo',
+                  // The object to pass to the server
+                  {date: date, memo: memo},
+                  // The function to call with the response
+                  function(data) {
+                    location.reload(true);
+                  }); // End of the call to getJSON
+
+     });   // end of what we do on document ready
+
+        function deleteMemo(memoID){
+            //var objectID = $(this).val();
+            var objectID = memoID;
+            console.log(objectID);
+            $.getJSON($SCRIPT_ROOT + '/_delete',
+            // The object to pass to the server
+            {objectID: objectID},
+                  // The function to call with the response
+                  function(data) {
+                    location.reload(true);
+                  }); // End of the call to getJSON
+        };
+
+</script>
+
 </body>
 </html>
