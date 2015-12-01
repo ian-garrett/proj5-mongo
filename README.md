@@ -10,4 +10,4 @@ go through and delete any memo at will. The memos are sorted by date, from oldes
 to newest.
 
 ## Working link
-http://ix.cs.uoregon.edu:6066/
+http://ix.cs.uoregon.edu:6066
