@@ -8,3 +8,6 @@ This application takesa date and message from a user and turns it into a memo. I
 then inserts the memo into a memo list that can be seen by the user. The user can 
 go through and delete any memo at will. The memos are sorted by date, from oldest
 to newest.
+
+## Working link
+http://ix.cs.uoregon.edu:6066/
